@@ -53,7 +53,8 @@ def addUsers():
 	
 	getLoginInfo()
 	
-def getLoginInfo():
+# def getLoginInfo():
+# needs body or else main will fail
 	
 
 
