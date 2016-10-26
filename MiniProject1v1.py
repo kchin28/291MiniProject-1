@@ -1,6 +1,7 @@
 import sqlite3
 import hashlib
 import sys
+from userInfo import *
 
 def main():
 	conn = sqlite3.connect('hospital.db')   
@@ -33,71 +34,33 @@ def main():
 			validChoice = True
 
 	if choice == "login":
-		sys.stdout.write("your choice was login!\n")
-		getLoginInfo()
+		user, pw = promptForLoginInfo() # login info from the user
+
+		if verifyLoginInfo(user, pw):
+			sys.stdout.write("You are logged in as: " + user + "\n");
 	else:
 		sys.stdout.write("your choice was add users!\n")
 		addUsers()
 
 def addUsers():
-	file_name = raw_input("Please write the name of the sql containing your users.\n")
-	file_name = "p1-tables.sql";
+	userRole = promptForUserRole()
+	name = promptForName()
 
-	userRole = "dummy"
-	patterns = ['D','N', 'A']
-	matches = set(patterns)
-	validUserRole = False
-
-	while not(validUserRole):
-		userRole = raw_input("Please enter user role doctor [d], nurse [n], or administrator [a]: ")
-		userRole = userRole.upper().strip()
-
-		if userRole in matches:
-			validUserRole = True
-
-	if userRole == "D":
-		sys.stdout.write("Doctor\n")
-	elif userRole == "N":
-		sys.stdout.write("Nurse\n")
-	else:
-		sys.stdout.write("Administrator\n")
-
-	user, pw = getLoginInfo()
+	user, pw = promptForLoginInfo()
 	sys.stdout.write(user + "\n")
 	sys.stdout.write(pw + "\n")
 
-	conn = sqlite3.connect('hospital.db')   
-	c = conn.cursor()
-	c.execute('PRAGMA foreign_keys=ON;')
+	# conn = sqlite3.connect('hospital.db')   
+	# c = conn.cursor()
+	# c.execute('PRAGMA foreign_keys=ON;')
 	
-	scriptFile = open(file_name.strip(), 'r')
-	script = scriptFile.read()
-	scriptFile.close()
+	# scriptFile = open(file_name.strip(), 'r')
+	# script = scriptFile.read()
+	# scriptFile.close()
 	
-	c.executescript(script)
-	conn.commit()
-	conn.close()
-
-# get the log in info
-# maybe split this up into get user
-# get password
-# since the login will need to check it
-
-def getLoginInfo():
-	validUserName = False;
-	while not(validUserName):
-		username = raw_input("Please enter your username: ")
-		# check valid username
-		
-		validUserName = True;
-		validPassword = False;
-
-		while not(validPassword):
-			password = raw_input("Please enter your password: ")
-			# check valid password
-			validPassword = True;
-
-	return username, password
+	# c.executescript(script)
+	# conn.commit()
+	# conn.close()
 
 if __name__ == "__main__":
 	main()
