@@ -46,24 +46,24 @@ def userController(result):
 def doctorController(action, staff_id):
 
 	conn, c = openConnection()
-	hcno = raw_input("	Please enter patient hcno: ")
+	hcno = raw_input("Please enter patient hcno: ")
 
 	if action == str(0):
 		selectAllPatientCharts(hcno)
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
-		chartID = raw_input("	Please enter chart ID: ")
-		sym = raw_input("	symptom: ")
+		chartID = raw_input("Please enter chart ID: ")
+		sym = raw_input("symptom: ")
 		addSymptom(hcno, chartID, staff_id, sym)
 
 	elif action == str(2): # hcno, chart_id, staff_id, diagnosis
-		chartID = raw_input("	Please enter chart ID: ")
-		diag = raw_input("	diagnosis: ")
+		chartID = raw_input("Please enter chart ID: ")
+		diag = raw_input("diagnosis: ")
 		addDiagnosis(hcno, chartID, staff_id, diag)
 
 	elif action == str(3): # hcno,chart_id,staff_id,mdate,drug_name
-		chartID = raw_input("	Please enter chart ID: ")
-		medication = raw_input("	medication: ")
+		chartID = raw_input("Please enter chart ID: ")
+		medication = raw_input("medication: ")
 		dose = raw_input("	dose:")
 
 		# has to give warning: dose (Y/N) and allergies
@@ -73,22 +73,21 @@ def doctorController(action, staff_id):
 
 def nurseController(action, staff_id):
 	conn, c = openConnection()
-	hcno = raw_input("	Please enter patient hcno: ")
+	hcno = raw_input("Please enter patient hcno: ")
 
 	if action == str(0):
 		selectAllPatientCharts(hcno)
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
-		chartID = raw_input("	Please enter chart ID: ")
-		sym = raw_input("	symptom: ")
+		chartID = raw_input("Please enter chart ID: ")
+		sym = raw_input("symptom: ")
 		addSymptom(hcno, chartID, staff_id, sym)
 
 	elif action == str(2):
-		chartID = raw_input("	Please enter chart ID: ")
-		openChart() # must do checks before a lot of them
+		openChart(hcno)
 
 	elif action == str(3):
-		chartID = raw_input("	Please enter chart ID: ")
+		chartID = raw_input("Please enter chart ID: ")
 		closeChart() 
 
 	closeConnection(conn)
@@ -103,11 +102,11 @@ def adminController(action, staff_id):
 		listPrescriptionsForDrug()
 
 	elif action == str(2):
-		chartID = raw_input("	Please enter chart ID: ")
+		chartID = raw_input("Please enter chart ID: ")
 		listMedicationsForDiagnosis() # must do checks before a lot of them
 
 	elif action == str(3):
-		chartID = raw_input("	Please enter chart ID: ")
+		chartID = raw_input("Please enter chart ID: ")
 		listDiagnosisesPriorToDrug() 
 
 	closeConnection(conn)

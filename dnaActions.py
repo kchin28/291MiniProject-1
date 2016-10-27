@@ -57,8 +57,42 @@ def addMedication(hcno, chartID, staff_id, medication, dose):
 	closeConnection(conn)
 
 # ----------------------------------- Nurse actions -----------------------------------
-def openChart():
+def promptNewPatient():
+	name = raw_input("Name:")
+	age = raw_input("Age:")
+	addr = raw_input("Address:")
+	phone = raw_input("Phone:")
+	ephone = raw_input("Emergency Phone:")
+
+	return name, age, addr, phone, ephone
+
+def createNewPatient(hcno, name, age, addr, phone, ephone):
+	conn, c = openConnection()
+
+	insert = [hcno, name, age, addr, phone, ephone]
+	c.execute("INSERT INTO patients VALUES (?, ?, ?, ?, ?, ?)", insert)
+	print "Patient added to database\n"
+	closeConnection(conn)
+
+def openChart(hcno):
 	conn,c = openConnection()
+	# check if patient exists, if not make one
+	c.execute("SELECT * from patients WHERE hcno = ?", (hcno,) )
+	result = c.fetchone()
+
+	if not result: # no patient
+		print "\nPatient is not found. Creating new patient..."
+
+		name, age, addr, phone, ePhone = promptNewPatient()
+		createNewPatient(hcno, name, age, addr, phone, ePhone)
+
+	else: #check if they have a chart open
+		closeChart()
+
+	# else
+	# check if there is an already open chart
+
+
 	closeConnection(conn)
 
 def closeChart():

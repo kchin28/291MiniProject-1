@@ -30,8 +30,6 @@ def verifyLoginInfo(c, username, password):
 
 	print "...Invalid log in, please try again"
 	return False
-# --------------------------------------------------------------------------
-
 
 # ---------------------------------- Roles ----------------------------------
 def roleStr(role):
@@ -64,7 +62,6 @@ def promptForUserRole():
 		sys.stdout.write("Creating new administrator user...\n\n")
 
 	return userRole
-
 
 # ---------------------------------- Ask for the name ----------------------------------
 def promptForName():

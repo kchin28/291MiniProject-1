@@ -10,10 +10,6 @@ def main():
 
 	if choice == "login":
 		validLogin = False
-		user = ""
-		pw = ""
-
-		result = False
 		while not validLogin:
 			user, pw = promptForLoginInfo()
 			result = verifyLoginInfo(c, user, pw)
@@ -27,6 +23,7 @@ def main():
 
 	closeConnection(conn)
 
+# initial action splits up the action as login or adding a user
 def promptForInitialAction():
 	patterns = ['login','add']
 	matches = set(patterns)
