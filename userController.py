@@ -88,7 +88,7 @@ def nurseController(action, staff_id):
 
 	elif action == str(3):
 		chartID = raw_input("Please enter chart ID: ")
-		closeChart() 
+		closeChart(chartID, hcno) 
 
 	closeConnection(conn)
 

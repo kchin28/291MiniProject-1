@@ -74,6 +74,18 @@ def createNewPatient(hcno, name, age, addr, phone, ephone):
 	print "Patient added to database\n"
 	closeConnection(conn)
 
+def promptToAskClose(chartID):
+	print "Chart '" + chartID +  "' is currently open"
+	answ = raw_input("Would you like to close this chart [y/n]? ")
+
+	validAns = False
+	while not validAns:
+		if answ == "y":
+			return True
+
+		elif answ == "n":
+			return False
+
 def openChart(hcno):
 	conn,c = openConnection()
 	# check if patient exists, if not make one
@@ -87,16 +99,36 @@ def openChart(hcno):
 		createNewPatient(hcno, name, age, addr, phone, ePhone)
 
 	else: #check if they have a chart open
-		closeChart()
+		c.execute("SELECT * FROM charts WHERE charts.hcno = ?",(hcno,))
+		results = c.fetchall()
+	
+		for i in results:
+			chartStatus = i[3]
+			if chartStatus is None: #open
+				if promptToAskClose(i["chart_id"]):
+					closeChart(i["chart_id"], hcno)
+				else:
+					print "No chart was created"
+					return
 
-	# else
-	# check if there is an already open chart
-
+	# code to create chart
+	chartID = raw_input("Please enter a unique chart id: ")
+	c.execute("SELECT datetime('now')")
+	result = c.fetchone()[0]
+	insert = [chartID, hcno, str(result), None]
+	c.execute("INSERT into charts VALUES (?,?,?,?)", insert)
+	print "Chart has is now open"
 
 	closeConnection(conn)
 
-def closeChart():
+def closeChart(chartID, hcno):
 	conn,c = openConnection()
+	
+	c.execute("SELECT datetime('now')")
+	endDate = c.fetchone()[0]
+	c.execute("UPDATE charts SET edate = ? WHERE hcno = ?", (endDate,hcno))
+	print "Chart has been closed\n"
+
 	closeConnection(conn)
 
 # ----------------------------------- Admin actions -----------------------------------
