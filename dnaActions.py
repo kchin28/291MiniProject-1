@@ -1,6 +1,7 @@
 
 import sqlite3
 from sqlConnection import *
+from Admin import *
 
 def testDoctorActions():
 	conn, c = openConnection()
@@ -132,18 +133,22 @@ def closeChart(chartID, hcno):
 	closeConnection(conn)
 
 # ----------------------------------- Admin actions -----------------------------------
-def createDoctorPrescriptionsReport(): # dont know if we need to get a period
+def createDoctorPrescriptionsReport(starDate, endDate): # dont know if we need to get a period
 	conn,c = openConnection()
+	createReport(starDate, endDate, c)
 	closeConnection(conn)
 
-def listPrescriptionsForDrug():
+def listPrescriptionsForDrug(starDate, endDate, category):
 	conn,c = openConnection()
+	drugCategoryTotal(starDate, endDate, category, c)
 	closeConnection(conn)
 
-def listMedicationsForDiagnosis(): # must do checks before a lot of them
+def listMedicationsForDiagnosis(diagnoses): # must do checks before a lot of them
 	conn,c = openConnection()
+	medicationsAfterDiagnoses(diagnoses, c)
 	closeConnection(conn)
 
-def listDiagnosisesPriorToDrug(): 
+def listDiagnosisesPriorToDrug(drug_name): 
 	conn,c = openConnection()
+	diagnosesBeforeDrug(drug_name, c)
 	closeConnection(conn)

@@ -1,6 +1,7 @@
 import sys
 from dnaActions import *
 from sqlConnection import *
+from Admin import *
 
 # Used once a user is logged in and will specifies what it can do as that role
 def userController(result):
@@ -108,18 +109,24 @@ def adminController(action, staff_id):
 	conn, c = openConnection()
 
 	if action == str(0): # ------------------------- IMPORTANT ------------------------
-		createDoctorPrescriptionsReport() # dont know if we need to get a period
+		startDate = raw_input("Please enter start date: ")
+		endDate = raw_input("Please enter end date: ")
+		createDoctorPrescriptionsReport(startDate, endDate)
+		
 
 	elif action == str(1):
-		listPrescriptionsForDrug()
+		startDate = raw_input("Please enter start date: ")
+		endDate = raw_input("Please enter end date: ")
+		category = raw_input("Please enter a drug category to search: ")
+		listPrescriptionsForDrug(startDate, endDate, category)
 
 	elif action == str(2):
-		chartID = raw_input("Please enter chart ID: ")
-		listMedicationsForDiagnosis() # must do checks before a lot of them
+		diagnoses = raw_input("Please enter the diagnoses you would like to loop up: ")
+		listMedicationsForDiagnosis(diagnoses) # must do checks before a lot of them
 
 	elif action == str(3):
-		chartID = raw_input("Please enter chart ID: ")
-		listDiagnosisesPriorToDrug() 
+		drug_name = raw_input("Please enter the drug you would like to look up: ")
+		listDiagnosisesPriorToDrug(drug_name) 
 
 	closeConnection(conn)
 
