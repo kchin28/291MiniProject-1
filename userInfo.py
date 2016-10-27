@@ -1,7 +1,9 @@
-import sys
+import sys, hashlib, sqlite3
 import hashlib
 # basic login functions and verifications
 
+# ---------------------------------- Login ----------------------------------
+# username and password
 def promptForLoginInfo():
 	validUsernameLen = False
 	while not validUsernameLen:
@@ -24,11 +26,14 @@ def verifyLoginInfo(c, username, password):
 
 	result = c.fetchone()
 	if result:
-		return True
+		return result
 
 	print "...Invalid log in, please try again"
 	return False
+# --------------------------------------------------------------------------
 
+
+# ---------------------------------- Roles ----------------------------------
 def roleStr(role):
 	if(role == "D"):
 		return "Doctor"
@@ -60,6 +65,7 @@ def promptForUserRole():
 
 	return userRole
 
+
+# ---------------------------------- Ask for the name ----------------------------------
 def promptForName():
 	return raw_input("Please enter your name: ") 
-

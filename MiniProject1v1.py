@@ -1,5 +1,6 @@
 import sqlite3, sys
 from userInfo import *
+from userController import *
 
 def openConnection():
 	conn = sqlite3.connect('hospital.db') 
@@ -28,9 +29,30 @@ def closeConnection(conn):
 
 def main():
 	conn, c = openConnection()
-
 	sys.stdout.write("Welcome!\n\n")
 
+	choice = promptForInitialAction()
+
+	if choice == "login":
+		validLogin = False
+		user = ""
+		pw = ""
+
+		result = False
+		while not validLogin:
+			user, pw = promptForLoginInfo()
+			result = verifyLoginInfo(c, user, pw)
+			if result:
+				validLogin = True
+		
+		# valid login! now branch to what you can do as that user
+		userController(result)
+	else:
+		addUsers()
+
+	closeConnection(conn)
+
+def promptForInitialAction():
 	patterns = ['login','add']
 	matches = set(patterns)
 
@@ -42,24 +64,7 @@ def main():
 		choice = choice.lower().strip()
 
 		if choice in matches: 
-			validChoice = True
-
-	if choice == "login":
-		validLogin = False
-		user = ""
-		pw = ""
-
-		while not validLogin:
-			user, pw = promptForLoginInfo()
-			if verifyLoginInfo(c, user, pw):
-				validLogin = True
-		
-		sys.stdout.write("You are logged in as: " + user + "\n");
-
-	else:
-		addUsers()
-
-	closeConnection(conn)
+			return choice
 
 def addUsers():
 	role = promptForUserRole()
@@ -70,8 +75,6 @@ def addUsers():
 
 
 def addUserSQL(role, name, user, pw):
-	conn, c = openConnection()
-
 	# count will be the user id!
 	c.execute("SELECT COUNT(*) FROM staff;")
 
