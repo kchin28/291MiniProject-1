@@ -15,7 +15,7 @@ def promptForLoginInfo():
 
 	validPWLen = False
 	while not validPWLen:
-		password =getpass("Please enter your password: ")
+		password = getpass("Please enter your password: ")
 		if len(password)  > 0:
 			validPWLen = True
 
