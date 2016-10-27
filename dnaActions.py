@@ -54,14 +54,30 @@ def addMedication(hcno, chartID, staff_id, medication, dose):
 	# check dose first
 	#add to dosage chart
 	conn,c = openConnection()
-	closeConnection()
+	closeConnection(conn)
 
 # ----------------------------------- Nurse actions -----------------------------------
 def openChart():
 	conn,c = openConnection()
-	closeConnection()
+	closeConnection(conn)
 
 def closeChart():
 	conn,c = openConnection()
-	closeConnection()
+	closeConnection(conn)
 
+# ----------------------------------- Admin actions -----------------------------------
+def createDoctorPrescriptionsReport(): # dont know if we need to get a period
+	conn,c = openConnection()
+	closeConnection(conn)
+
+def listPrescriptionsForDrug():
+	conn,c = openConnection()
+	closeConnection(conn)
+
+def listMedicationsForDiagnosis(): # must do checks before a lot of them
+	conn,c = openConnection()
+	closeConnection(conn)
+
+def listDiagnosisesPriorToDrug(): 
+	conn,c = openConnection()
+	closeConnection(conn)

@@ -33,6 +33,15 @@ def userController(result):
 	else:
 		print "You are logged in as an administrator\n"
 
+		while(1):
+			print "Please select an action you wish to perform..."
+			print "	[0] Create report for all doctor prescriptions"
+			print "	[1] List all perscriptions for specific drug"
+			print "	[2] List all possible medications for a specific diagnosis"
+			print "	[3] List all the diagnoses made prior to prescribing specific drug"
+			action = raw_input("action: ")
+			adminController(action, result["staff_id"])
+
 
 def doctorController(action, staff_id):
 
@@ -74,15 +83,32 @@ def nurseController(action, staff_id):
 		sym = raw_input("	symptom: ")
 		addSymptom(hcno, chartID, staff_id, sym)
 
-	elif action == str(2): # hcno, chart_id, staff_id, diagnosis
+	elif action == str(2):
 		chartID = raw_input("	Please enter chart ID: ")
 		openChart() # must do checks before a lot of them
 
-	elif action == str(3): # hcno,chart_id,staff_id,mdate,drug_name
+	elif action == str(3):
 		chartID = raw_input("	Please enter chart ID: ")
 		closeChart() 
 
 	closeConnection(conn)
 
+def adminController(action, staff_id):
+	conn, c = openConnection()
 
+	if action == str(0): # ------------------------- IMPORTANT ------------------------
+		createDoctorPrescriptionsReport() # dont know if we need to get a period
+
+	elif action == str(1):
+		listPrescriptionsForDrug()
+
+	elif action == str(2):
+		chartID = raw_input("	Please enter chart ID: ")
+		listMedicationsForDiagnosis() # must do checks before a lot of them
+
+	elif action == str(3):
+		chartID = raw_input("	Please enter chart ID: ")
+		listDiagnosisesPriorToDrug() 
+
+	closeConnection(conn)
 
