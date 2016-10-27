@@ -107,6 +107,7 @@ def testDiagnosesBeforeDrug(cursor):
 	drug = 'moltrin'
 	diagnosesBeforeDrug(drug, cursor)
 
+'''
 conn = sqlite3.connect('hospital.db') 
 conn.text_factory = str
 conn.row_factory = sqlite3.Row
@@ -117,3 +118,4 @@ testCreateReport(c)
 testDrugCategoryTotal(c)
 testMedicationsAfterDiagnoses(c)
 testDiagnosesBeforeDrug(c)
+'''
