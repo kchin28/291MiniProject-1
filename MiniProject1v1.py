@@ -1,10 +1,7 @@
 import sqlite3, sys
 from userInfo import *
-<<<<<<< HEAD
 from userController import *
-=======
-from doctorActions import *
->>>>>>> db2d0efa3fd7fe5c2127afa15d78fbabd728e178
+
 
 def openConnection():
 	conn = sqlite3.connect('hospital.db') 
@@ -33,13 +30,7 @@ def closeConnection(conn):
 
 def main():
 	conn, c = openConnection()
-<<<<<<< HEAD
 	sys.stdout.write("Welcome!\n\n")
-=======
-	closeConnection(conn)
-
-	sys.stdout.write("Welcome!\n")
->>>>>>> db2d0efa3fd7fe5c2127afa15d78fbabd728e178
 
 	choice = promptForInitialAction()
 
@@ -56,9 +47,9 @@ def main():
 				validLogin = True
 		
 		# valid login! now branch to what you can do as that user
-		userController(result)
+		userController(c, conn, result)
 	else:
-		addUsers()
+		addUsers(c, conn)
 
 	closeConnection(conn)
 
@@ -74,30 +65,17 @@ def promptForInitialAction():
 		choice = choice.lower().strip()
 
 		if choice in matches: 
-<<<<<<< HEAD
 			return choice
-=======
-			validChoice = True
 
-	if choice == "login":
-		user, pw = promptForLoginInfo() # login info from the user
-
-		if verifyLoginInfo(user, pw):
-			sys.stdout.write("You are logged in as: " + user + "\n");
-	else:
-		sys.stdout.write("your choice was add users!\n")
-		addUsers()
->>>>>>> db2d0efa3fd7fe5c2127afa15d78fbabd728e178
-
-def addUsers():
+def addUsers(c, conn):
 	role = promptForUserRole()
 	name = promptForName()
 	user, pw = promptForLoginInfo()
 
-	addUserSQL(role, name, user, pw)
+	addUserSQL(c, conn, role, name, user, pw)
 
 
-def addUserSQL(role, name, user, pw):
+def addUserSQL(c, conn, role, name, user, pw):
 	# count will be the user id!
 	c.execute("SELECT COUNT(*) FROM staff;")
 
@@ -106,8 +84,6 @@ def addUserSQL(role, name, user, pw):
 	c.execute("INSERT INTO staff VALUES (?, ?, ?, ?, ?)", insert)
 	conn.commit()
 
-
-
 	c.execute("SELECT * FROM staff;")
 	
 	result = c.fetchall()
@@ -115,38 +91,10 @@ def addUserSQL(role, name, user, pw):
 		role = roleStr(row["role"])
 		print "	Successfully added", role, row["name"], "| username:", row["login"]
 	print
-
-	closeConnection(conn)
-<<<<<<< HEAD
 	main()
-=======
 	
-def testDoctorActions():
-	conn, c = openConnection()
-	scriptFile = open('chartsTestData.sql', 'r')
-	script = scriptFile.read()
-	scriptFile.close()
-	c.executescript(script)
-	
-	x = "34wsa"
-	
-	c.execute( '''SELECT *
-				FROM charts
-				WHERE charts.hcno = ? 
-				ORDER BY adate'''
-			 ,(x,))
-	results = c.fetchall()
-	
-	for i in results:
-		chartStatus = i[3]
-		
-		print "chartStatus:",chartStatus," | "
-		if chartStatus is None: #open
-			print i['hcno'],i['adate'],i['edate']," open"
-		else:
-		 	print i['hcno'],i['adate'],i['edate']," closed"
->>>>>>> db2d0efa3fd7fe5c2127afa15d78fbabd728e178
 
 if __name__ == "__main__":
-	#main()
-	testDoctorActions()
+	main()
+	# conn, c = openConnection()
+	# testDoctorActions(c, conn)

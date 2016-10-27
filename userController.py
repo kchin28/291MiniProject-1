@@ -1,8 +1,9 @@
+from doctorActions import *
 
 # Used once a user is logged in and will specifies what it can do as that role
 
 #
-def userController(result):
+def userController(c, conn, result):
 
 	role = result["role"]
 
@@ -16,6 +17,7 @@ def userController(result):
 		print "	[2] Add a diagnosis"
 		print "	[3] Add a medication"
 		action = raw_input("action: ")
+		doctorController(c, action, hcno)
 
 		#check for hcno found
 	elif role == "N":
@@ -24,3 +26,8 @@ def userController(result):
 		#check
 	else:
 		print "You are logged in as an administrator\n"
+
+def doctorController(c, action, hcno):
+	if action == str(0):
+		selectAllPatientCharts(c, hcno)
+
