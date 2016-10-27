@@ -62,10 +62,9 @@ def addUserSQL(role, name, user, pw):
 
 	c.execute("SELECT * FROM staff;")
 	
-	result = c.fetchall()
-	for row in result: #staff_id, role, name, login, password
-		role = roleStr(row["role"])
-		print "	Successfully added", role, row["name"], "| username:", row["login"]
+	row = c.fetchall()[count]
+	role = roleStr(row["role"])
+	print "Successfully added", role, row["name"], "| username:", row["login"]
 	print
 
 	closeConnection(conn)
