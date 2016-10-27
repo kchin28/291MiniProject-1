@@ -28,7 +28,7 @@ def main():
 	conn, c = openConnection()
 	closeConnection(conn)
 
-	sys.stdout.write("Welcome!\n")
+	sys.stdout.write("Welcome!\n\n")
 
 	patterns = ['login','add']
 	matches = set(patterns)
@@ -49,7 +49,6 @@ def main():
 		if verifyLoginInfo(user, pw):
 			sys.stdout.write("You are logged in as: " + user + "\n");
 	else:
-		sys.stdout.write("your choice was add users!\n")
 		addUsers()
 
 def addUsers():
@@ -74,8 +73,6 @@ def addUserSQL(role, name, user, pw):
 	insert = [count, role, name, user, pw]
 	c.execute("INSERT INTO staff VALUES (?, ?, ?, ?, ?)", insert)
 	conn.commit()
-
-
 
 	c.execute("SELECT * FROM staff;")
 	

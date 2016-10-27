@@ -1,4 +1,5 @@
 import sys
+import hashlib
 # basic login functions and verifications
 
 def promptForLoginInfo():
@@ -15,6 +16,7 @@ def promptForLoginInfo():
 			# check valid password
 			validPassword = True
 
+	password = hashlib.sha224(password).hexdigest()
 	return username, password
 
 def verifyLoginInfo(username, password):
