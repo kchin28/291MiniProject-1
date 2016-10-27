@@ -3,28 +3,39 @@ import hashlib
 # basic login functions and verifications
 
 def promptForLoginInfo():
-	validUserName = False;
-	while not(validUserName):
+	validUsernameLen = False
+	while not validUsernameLen:
 		username = raw_input("Please enter your username: ")
-		# check valid username
 		
-		validUserName = True
-		validPassword = False
+		if len(username) > 0:
+			validUsernameLen = True
 
-		while not(validPassword):
-			password = raw_input("Please enter your password: ")
-			# check valid password
-			validPassword = True
+	validPWLen = False
+	while not validPWLen:
+		password = raw_input("Please enter your password: ")
+		if len(password)  > 0:
+			validPWLen = True
 
 	password = hashlib.sha224(password).hexdigest()
 	return username, password
 
-def verifyLoginInfo(username, password):
-	# if login info is in staff
-	i = 0
+def verifyLoginInfo(c, username, password):
+	c.execute("SELECT * FROM staff WHERE login = ? AND password = ?;", (username, password))
 
-	return True
+	result = c.fetchone()
+	if result:
+		return True
 
+	print "...Invalid log in, please try again"
+	return False
+
+def roleStr(role):
+	if(role == "D"):
+		return "Doctor"
+	elif(role == "N"):
+		return "Nurse"
+	else:
+		return "Admin"
 
 # when adding a new user D, N, A: staff_id, role, name, login, password
 def promptForUserRole():
