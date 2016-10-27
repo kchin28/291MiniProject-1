@@ -1,24 +1,35 @@
-import sqlite3
-import hashlib
-import sys
+import sqlite3, sys
 from userInfo import *
 
-def main():
-	conn = sqlite3.connect('hospital.db')   
+def openConnection():
+	conn = sqlite3.connect('hospital.db') 
+	conn.text_factory = str
 	c = conn.cursor()
 	c.execute('PRAGMA foreign_keys=ON;')
 	
-	scriptFile = open('p1-tables.sql', 'r')
-	script = scriptFile.read()
-	scriptFile.close()
+	c.execute("SELECT name FROM sqlite_master WHERE type='table';")
+	result = c.fetchone()
 
-	c.executescript(script)
+	if not result: #tables haven't been created
+		print "Reading tables..."
+		scriptFile = open('p1-tables.sql', 'r')
+		script = scriptFile.read()
+		scriptFile.close()
+		c.executescript(script)
+		conn.commit()
 
+	conn.row_factory = sqlite3.Row
+	c = conn.cursor()
+	return conn, c
+
+def closeConnection(conn):
 	conn.commit()
-	
 	conn.close()
 
-	sys.stdout.write("Welcome!\n")
+def main():
+	conn, c = openConnection()
+
+	sys.stdout.write("Welcome!\n\n")
 
 	patterns = ['login','add']
 	matches = set(patterns)
@@ -34,33 +45,51 @@ def main():
 			validChoice = True
 
 	if choice == "login":
-		user, pw = promptForLoginInfo() # login info from the user
+		validLogin = False
+		user = ""
+		pw = ""
 
-		if verifyLoginInfo(user, pw):
-			sys.stdout.write("You are logged in as: " + user + "\n");
+		while not validLogin:
+			user, pw = promptForLoginInfo()
+			if verifyLoginInfo(c, user, pw):
+				validLogin = True
+		
+		sys.stdout.write("You are logged in as: " + user + "\n");
+
 	else:
-		sys.stdout.write("your choice was add users!\n")
 		addUsers()
 
+	closeConnection(conn)
+
 def addUsers():
-	userRole = promptForUserRole()
+	role = promptForUserRole()
 	name = promptForName()
-
 	user, pw = promptForLoginInfo()
-	sys.stdout.write(user + "\n")
-	sys.stdout.write(pw + "\n")
 
-	# conn = sqlite3.connect('hospital.db')   
-	# c = conn.cursor()
-	# c.execute('PRAGMA foreign_keys=ON;')
+	addUserSQL(role, name, user, pw)
+
+
+def addUserSQL(role, name, user, pw):
+	conn, c = openConnection()
+
+	# count will be the user id!
+	c.execute("SELECT COUNT(*) FROM staff;")
+
+	count = c.fetchone()[0]
+	insert = [count, role, name, user, pw]
+	c.execute("INSERT INTO staff VALUES (?, ?, ?, ?, ?)", insert)
+	conn.commit()
+
+	c.execute("SELECT * FROM staff;")
 	
-	# scriptFile = open(file_name.strip(), 'r')
-	# script = scriptFile.read()
-	# scriptFile.close()
-	
-	# c.executescript(script)
-	# conn.commit()
-	# conn.close()
+	result = c.fetchall()
+	for row in result: #staff_id, role, name, login, password
+		role = roleStr(row["role"])
+		print "	Successfully added", role, row["name"], "| username:", row["login"]
+	print
+
+	closeConnection(conn)
+	main()
 
 if __name__ == "__main__":
 	main()
