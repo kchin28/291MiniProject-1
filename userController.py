@@ -39,7 +39,7 @@ def userController(result):
 		while(1):
 			print "\nPlease select an action you wish to perform..."
 			print "	[0] Create report for all doctor prescriptions"
-			print "	[1] List all perscriptions for specific drug"
+			print "	[1] List total amount prescribed for specific drug"
 			print "	[2] List all possible medications for a specific diagnosis"
 			print "	[3] List all the diagnoses made prior to prescribing specific drug"
 			print "	[q] Quit program"
@@ -123,7 +123,7 @@ def adminController(action, staff_id):
 		listPrescriptionsForDrug(startDate, endDate, category)
 
 	elif action == str(2):
-		diagnoses = raw_input("Please enter the diagnoses you would like to loop up: ")
+		diagnoses = raw_input("Please enter the diagnoses you would like to look up: ")
 		listMedicationsForDiagnosis(diagnoses) # must do checks before a lot of them
 
 	elif action == str(3):
