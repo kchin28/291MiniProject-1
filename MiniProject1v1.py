@@ -2,6 +2,7 @@ import sqlite3
 import hashlib
 import sys
 from userInfo import *
+from doctorActions import *
 
 def openConnection():
 	conn = sqlite3.connect('hospital.db') 
@@ -28,7 +29,7 @@ def main():
 	conn, c = openConnection()
 	closeConnection(conn)
 
-	sys.stdout.write("Welcome!\n\n")
+	sys.stdout.write("Welcome!\n")
 
 	patterns = ['login','add']
 	matches = set(patterns)
@@ -49,6 +50,7 @@ def main():
 		if verifyLoginInfo(user, pw):
 			sys.stdout.write("You are logged in as: " + user + "\n");
 	else:
+		sys.stdout.write("your choice was add users!\n")
 		addUsers()
 
 def addUsers():
@@ -74,6 +76,8 @@ def addUserSQL(role, name, user, pw):
 	c.execute("INSERT INTO staff VALUES (?, ?, ?, ?, ?)", insert)
 	conn.commit()
 
+
+
 	c.execute("SELECT * FROM staff;")
 	
 	print
@@ -88,6 +92,32 @@ def addUserSQL(role, name, user, pw):
 	print
 
 	closeConnection(conn)
+	
+def testDoctorActions():
+	conn, c = openConnection()
+	scriptFile = open('chartsTestData.sql', 'r')
+	script = scriptFile.read()
+	scriptFile.close()
+	c.executescript(script)
+	
+	x = "34wsa"
+	
+	c.execute( '''SELECT *
+				FROM charts
+				WHERE charts.hcno = ? 
+				ORDER BY adate'''
+			 ,(x,))
+	results = c.fetchall()
+	
+	for i in results:
+		chartStatus = i[3]
+		
+		print "chartStatus:",chartStatus," | "
+		if chartStatus is None: #open
+			print i['hcno'],i['adate'],i['edate']," open"
+		else:
+		 	print i['hcno'],i['adate'],i['edate']," closed"
 
 if __name__ == "__main__":
-	main()
+	#main()
+	testDoctorActions()
