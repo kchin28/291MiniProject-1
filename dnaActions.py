@@ -22,6 +22,7 @@ def testDoctorActions():
 # ----------------------------------- Doctor & Nurse actions -----------------------------------
 def selectAllPatientCharts(hcno):
 	conn, c = openConnection()
+
 	c.execute( '''SELECT *
 				FROM charts
 				WHERE charts.hcno = ? 
@@ -29,24 +30,93 @@ def selectAllPatientCharts(hcno):
 			 ,(hcno,))
 	results = c.fetchall()
 	
+	print results[0].keys()
+
 	for i in results:
 		chartStatus = i[3]
 		
-		print "chartStatus:",chartStatus," | "
 		if chartStatus is None: #open
-			print "	",i['hcno'],i['adate'],i['edate']," open"
-		else:
-		 	print "	",i['hcno'],i['adate'],i['edate']," closed"
+			print i['chart_id'],i['hcno'],i['adate'],i['edate']," open"
+		else: #closed
+		 	print i['chart_id'],i['hcno'],i['adate'],i['edate']," closed"
 
 	closeConnection(conn)
 
-def addSymptom(hcno, chart_id, staff_id, sym):
+def pickChart():
 	conn, c = openConnection()
+	chartID = raw_input("To view a chart in more detail, enter its id. (ie. First Column)\n")
+	
+	# check if chart is open before proceeding	
+	c.execute( '''SELECT *
+				FROM charts
+				WHERE charts.chart_id = ? 
+				ORDER BY adate'''
+			 ,(chartID,))
+	results = c.fetchone()
+
+	if results[3] is not None:
+		print "Chart: " +  str(chartID) +  " not active. " 
+		return;  #goes back to 'main menu'
+
+	#enter error checking here
+	# not yet tested w data, only forming sql query
+	c.execute(''' 
+			SELECT * FROM 
+			 ( SELECT staff_id as StaffID,obs_date as Date ,symptom as Description 
+  			  FROM symptoms
+			  WHERE chart_id=?
+			 UNION
+			 SELECT staff_id as StaffID ,ddate as Date,diagnosis as Description
+			  FROM diagnoses
+			  WHERE chart_id=? 
+			 UNION 
+		     SELECT staff_id as StaffID,mdate as Date,drug_name as Description
+			  FROM medications
+			  WHERE chart_id=? 
+			 ) 
+			 ORDER BY Date
+			  '''
+		,(chartID,chartID,chartID) )
+	results = c.fetchall()
+
+	for i in results:
+		print i['StaffID'],i['Date'],i['Description']
+
+	closeConnection(conn)
+
+def addSymptom(hcno, chartID, staff_id, sym):
+	conn, c = openConnection()
+
+	c.execute("SELECT datetime('now')")
+	date = c.fetchone()[0]
+
+	c.execute('''
+			  INSERT INTO symptoms
+			  VALUES (?,?,?,?,?)
+			   '''
+		,(hcno,chartID,staff_id,date,sym))
+
+	#check proper insert
+	print("Symptom added successfully.")
+
 	closeConnection(conn)
 
 # ----------------------------------- Doctor actions -----------------------------------
 def addDiagnosis(hcno, chartID, staff_id, diag):
 	conn, c = openConnection()
+
+	c.execute("SELECT datetime('now')")
+	date = c.fetchone()[0]
+
+	c.execute('''
+			  INSERT INTO diagnoses
+			  VALUES (?,?,?,?,?)
+			  '''
+		,(hcno,chartID,staff_id,date,diag))
+
+	#check proper insert
+	print("Diagnosis added successfully.")
+
 	closeConnection(conn)
 
 

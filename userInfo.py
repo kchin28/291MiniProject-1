@@ -1,5 +1,6 @@
 import sys, hashlib, sqlite3
 import hashlib
+from getpass import getpass
 # basic login functions and verifications
 
 # ---------------------------------- Login ----------------------------------
@@ -14,7 +15,7 @@ def promptForLoginInfo():
 
 	validPWLen = False
 	while not validPWLen:
-		password = raw_input("Please enter your password: ")
+		password =getpass("Please enter your password: ")
 		if len(password)  > 0:
 			validPWLen = True
 

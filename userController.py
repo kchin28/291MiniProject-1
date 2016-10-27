@@ -56,6 +56,7 @@ def doctorController(action, staff_id):
 
 	if action == str(0):
 		selectAllPatientCharts(hcno)
+		pickChart()
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
 		chartID = raw_input("Please enter chart ID: ")
@@ -70,7 +71,7 @@ def doctorController(action, staff_id):
 	elif action == str(3): # hcno,chart_id,staff_id,mdate,drug_name
 		chartID = raw_input("Please enter chart ID: ")
 		medication = raw_input("medication: ")
-		dose = raw_input("	dose:")
+		dose = raw_input("dose: ")
 
 		# has to give warning: dose (Y/N) and allergies
 		addMedication(hcno, chartID, staff_id, medication, dose)
@@ -87,6 +88,7 @@ def nurseController(action, staff_id):
 
 	if action == str(0):
 		selectAllPatientCharts(hcno)
+		pickChart()
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
 		chartID = raw_input("Please enter chart ID: ")
