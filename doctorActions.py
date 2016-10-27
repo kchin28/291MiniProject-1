@@ -39,3 +39,18 @@ def selectAllPatientCharts(hcno):
 		 	print i['hcno'],i['adate'],i['edate']," closed"
 
 	closeConnection(conn)
+
+def addSymptom(hcno, chart_id, staff_id, sym):
+	conn, c = openConnection()
+	closeConnection(conn)
+
+
+def addMedication(hcno, chartID, staff_id, medication, dose):
+	#get age stuff too
+	# check dose first
+	#add to dosage chart
+	conn,c = openConnection()
+	closeConnection()
+
+
+

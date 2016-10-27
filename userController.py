@@ -35,7 +35,7 @@ def userController(result):
 			print "	[2] Add a diagnosis"
 			print "	[3] Add a medication"
 			action = raw_input("action: ")
-			doctorController(action, hcno)
+			doctorController(action, hcno, result["staff_id"])
 
 	#check for hcno found
 	elif role == "N":
@@ -46,18 +46,30 @@ def userController(result):
 		print "You are logged in as an administrator\n"
 
 
-def doctorController(action, hcno):
+def doctorController(action, hcno, staff_id):
 
 	conn, c = openConnection()
 
 	if action == str(0):
 		selectAllPatientCharts(hcno)
-	elif action == str(1):
-		action = raw_input("		symptom: ")
-	elif action == str(2):
-		action = raw_input("		diagnosis: ")
-	elif action == str(3):
-		action = raw_input("		medication: ")
+
+	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
+		chartID = raw_input("	Please enter chart ID: ")
+		sym = raw_input("	symptom: ")
+		addSymptom(hcno, chartID, staff_id, sym)
+
+	elif action == str(2): # hcno, chart_id, staff_id, diagnosis
+		chartID = raw_input("	Please enter chart ID: ")
+		diag = raw_input("	diagnosis: ")
+		addDiagnosis(hcno, chartID, staff_id, diag)
+
+	elif action == str(3): # hcno,chart_id,staff_id,mdate,drug_name
+		chartID = raw_input("	Please enter chart ID: ")
+		medication = raw_input("	medication: ")
+		dose = raw_input("	dose:")
+
+		# has to give warning: dose (Y/N) and allergies
+		addMedication(hcno, chartID, staff_id, medication, dose) 
 
 	closeConnection(conn)
 
