@@ -1,4 +1,4 @@
-import sqlite3, sys, os
+import sqlite3, sys
 from userInfo import *
 
 def openConnection():
