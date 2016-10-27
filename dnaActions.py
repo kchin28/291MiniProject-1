@@ -3,7 +3,6 @@ import sqlite3
 from sqlConnection import *
 
 def testDoctorActions():
-
 	conn, c = openConnection()
 	scriptFile = open('p1-tables.sql', 'r')
 	script = scriptFile.read()
@@ -19,8 +18,8 @@ def testDoctorActions():
 	hcno = "34wsa"
 	selectAllPatientCharts(hcno)
 
+# ----------------------------------- Doctor & Nurse actions -----------------------------------
 def selectAllPatientCharts(hcno):
-
 	conn, c = openConnection()
 	c.execute( '''SELECT *
 				FROM charts
@@ -44,6 +43,11 @@ def addSymptom(hcno, chart_id, staff_id, sym):
 	conn, c = openConnection()
 	closeConnection(conn)
 
+# ----------------------------------- Doctor actions -----------------------------------
+def addDiagnosis(hcno, chartID, staff_id, diag):
+	conn, c = openConnection()
+	closeConnection(conn)
+
 
 def addMedication(hcno, chartID, staff_id, medication, dose):
 	#get age stuff too
@@ -52,5 +56,12 @@ def addMedication(hcno, chartID, staff_id, medication, dose):
 	conn,c = openConnection()
 	closeConnection()
 
+# ----------------------------------- Nurse actions -----------------------------------
+def openChart():
+	conn,c = openConnection()
+	closeConnection()
 
+def closeChart():
+	conn,c = openConnection()
+	closeConnection()
 
