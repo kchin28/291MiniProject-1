@@ -1,7 +1,10 @@
 
 import sqlite3
+from sqlConnection import *
 
-def testDoctorActions(c, conn):
+def testDoctorActions():
+
+	conn, c = openConnection()
 	scriptFile = open('p1-tables.sql', 'r')
 	script = scriptFile.read()
 	scriptFile.close()
@@ -14,9 +17,11 @@ def testDoctorActions(c, conn):
 	c.executescript(script)
 	
 	hcno = "34wsa"
-	selectAllPatientCharts(c, hcno)
+	selectAllPatientCharts(hcno)
 
-def selectAllPatientCharts(c, hcno):
+def selectAllPatientCharts(hcno):
+
+	conn, c = openConnection()
 	c.execute( '''SELECT *
 				FROM charts
 				WHERE charts.hcno = ? 
@@ -24,9 +29,6 @@ def selectAllPatientCharts(c, hcno):
 			 ,(hcno,))
 	results = c.fetchall()
 	
-	if not results:
-		print "Patient not found, please try again"
-
 	for i in results:
 		chartStatus = i[3]
 		
@@ -35,3 +37,5 @@ def selectAllPatientCharts(c, hcno):
 			print i['hcno'],i['adate'],i['edate']," open"
 		else:
 		 	print i['hcno'],i['adate'],i['edate']," closed"
+
+	closeConnection(conn)
