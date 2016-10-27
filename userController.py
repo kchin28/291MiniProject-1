@@ -1,49 +1,54 @@
+import sys
 from dnaActions import *
 from sqlConnection import *
 
 # Used once a user is logged in and will specifies what it can do as that role
 def userController(result):
-
 	role = result["role"]
 
 	if role == "D":
-		print "You are logged in as a doctor\n"
+		print "You are logged in as a doctor"
 
 		while(1):
-			print "Please select an action you wish to perform..."
+			print "\nPlease select an action you wish to perform..."
 			print "	[0] List all charts for a given patient"
 			print "	[1] Add a symptom"
 			print "	[2] Add a diagnosis"
 			print "	[3] Add a medication"
+			print "	[q] Quit program"
 			action = raw_input("action: ")
 			doctorController(action, result["staff_id"])
 
 	#check for hcno found
 	elif role == "N":
-		print "You are logged in as a nurse\n"
+		print "You are logged in as a nurse"
 
 		while(1):
-			print "Please select an action you wish to perform..."
+			print "\nPlease select an action you wish to perform..."
 			print "	[0] List all charts for a given patient"
 			print "	[1] Add a symptom"
 			print "	[2] Create a new chart"
 			print "	[3] Close an open chart"
+			print "	[q] Quit program"
 			action = raw_input("action: ")
 			nurseController(action, result["staff_id"])
 	else:
-		print "You are logged in as an administrator\n"
+		print "You are logged in as an administrator"
 
 		while(1):
-			print "Please select an action you wish to perform..."
+			print "\nPlease select an action you wish to perform..."
 			print "	[0] Create report for all doctor prescriptions"
 			print "	[1] List all perscriptions for specific drug"
 			print "	[2] List all possible medications for a specific diagnosis"
 			print "	[3] List all the diagnoses made prior to prescribing specific drug"
+			print "	[q] Quit program"
 			action = raw_input("action: ")
 			adminController(action, result["staff_id"])
 
 
 def doctorController(action, staff_id):
+	if action == "q":
+		sys.exit(0)
 
 	conn, c = openConnection()
 	hcno = raw_input("Please enter patient hcno: ")
@@ -67,12 +72,16 @@ def doctorController(action, staff_id):
 		dose = raw_input("	dose:")
 
 		# has to give warning: dose (Y/N) and allergies
-		addMedication(hcno, chartID, staff_id, medication, dose) 
+		addMedication(hcno, chartID, staff_id, medication, dose)
 
 	closeConnection(conn)
 
 def nurseController(action, staff_id):
+	if action == "q":
+		sys.exit(0)
+	
 	conn, c = openConnection()
+
 	hcno = raw_input("Please enter patient hcno: ")
 
 	if action == str(0):
@@ -93,6 +102,9 @@ def nurseController(action, staff_id):
 	closeConnection(conn)
 
 def adminController(action, staff_id):
+	if action == "q":
+		sys.exit(0)
+
 	conn, c = openConnection()
 
 	if action == str(0): # ------------------------- IMPORTANT ------------------------

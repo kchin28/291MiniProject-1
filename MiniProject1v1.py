@@ -8,7 +8,10 @@ def main():
 	sys.stdout.write("Welcome!\n\n")
 	choice = promptForInitialAction()
 
-	if choice == "login":
+	if choice == "q":
+		sys.exit(0)
+
+	elif choice == "login":
 		validLogin = False
 		while not validLogin:
 			user, pw = promptForLoginInfo()
@@ -18,6 +21,7 @@ def main():
 		
 		# valid login! now branch to what you can do as that user
 		userController(result)
+		
 	else:
 		addUsers()
 
@@ -25,14 +29,14 @@ def main():
 
 # initial action splits up the action as login or adding a user
 def promptForInitialAction():
-	patterns = ['login','add']
+	patterns = ['login','add', 'q']
 	matches = set(patterns)
 
 	validChoice = False
 	choice = "dummy string"
 
 	while not(validChoice):
-		choice = raw_input("Do you wish to Login [login] or Add a user [add]? ")
+		choice = raw_input("Do you wish to Login [login], Add a user [add], or Quit [q]? ")
 		choice = choice.lower().strip()
 
 		if choice in matches: 

@@ -33,9 +33,9 @@ def selectAllPatientCharts(hcno):
 		
 		print "chartStatus:",chartStatus," | "
 		if chartStatus is None: #open
-			print i['hcno'],i['adate'],i['edate']," open"
+			print "	",i['hcno'],i['adate'],i['edate']," open"
 		else:
-		 	print i['hcno'],i['adate'],i['edate']," closed"
+		 	print "	",i['hcno'],i['adate'],i['edate']," closed"
 
 	closeConnection(conn)
 
