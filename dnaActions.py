@@ -61,7 +61,7 @@ def selectAllPatientCharts(hcno):
 
 def pickChart(hcno):
 	conn, c = openConnection()
-	chartID = raw_input("To view a chart in more detail, enter its id. (ie. First Column)\n")
+	chartID = raw_input("To view a chart in more detail, enter its id. (ie. First Column): ")
 
 	#enter error checking here
 	# not yet tested w data, only forming sql query
@@ -83,6 +83,9 @@ def pickChart(hcno):
 			  '''
 		,(chartID,chartID,chartID) )
 	results = c.fetchall()
+
+	if not results:
+		print "No details found."
 
 	for i in results:
 		print i['StaffID'],i['Date'],i['Description']
@@ -181,14 +184,14 @@ def checkAmt(hcno, amt, drugName):
 		choice = "dummy string"
 
 		while not(validChoice):
-			choice = raw_input("Do you wish to [change] or [keep] the prescribed amount? \n")
+			choice = raw_input("Do you wish to [change] or [keep] the prescribed amount? ")
 			choice = choice.lower().strip()
 
 			if choice in matches: 
 				validChoice = True
 			
 		if choice == 'change':
-			changedAmt=raw_input("Please enter the new amount:   ")
+			changedAmt=raw_input("Please enter the new amount: ")
 			amt = changedAmt
 			checkAmt(hcno, amt, drugName)
 
@@ -273,7 +276,8 @@ def openChart(hcno):
 					return
 
 	# code to create chart
-	chartID = raw_input("Please enter a unique chart id: ")
+	c.execute("SELECT COUNT(*) FROM charts;")
+	chartID = c.fetchone()[0] # count will be the id!
 	c.execute("SELECT datetime('now')")
 	result = c.fetchone()[0]
 	insert = [chartID, hcno, str(result), None]
