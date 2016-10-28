@@ -3,7 +3,8 @@ import sqlite3
 from sqlConnection import *
 from Admin import *
 
-# def testDoctorActions(): FOR TESTING
+# for testing purposes
+# def testDoctorActions():
 # 	conn, c = openConnection()
 # 	scriptFile = open('p1-tables.sql', 'r')
 # 	script = scriptFile.read()
@@ -44,6 +45,7 @@ def isChartOpen(chartID, hcno):
 			 ,(chartID, hcno))
 	results = c.fetchone()
 
+	# open charts must have a NULL value for edate
 	if results["edate"] is not None:
 		print "Chart: " +  str(chartID) +  " not active. Nothing done" 
 		closeConnection(conn)
@@ -81,6 +83,8 @@ def pickChart(hcno):
 	if not chartExists(chartID):
 		return
 		
+
+	#select staffID, date, and description to make these tables union compatible
 	c.execute(''' 
 			SELECT * FROM 
 			 ( SELECT staff_id as StaffID,obs_date as Date ,symptom as Description 
@@ -123,7 +127,6 @@ def addSymptom(hcno, chartID, staff_id, sym):
 			   '''
 		,(hcno,chartID,staff_id,date,sym))
 
-	#check proper insert
 	print("Symptom added successfully.")
 
 	closeConnection(conn)
@@ -144,7 +147,7 @@ def addDiagnosis(hcno, chartID, staff_id, diag):
 			  '''
 		,(hcno,chartID,staff_id,date,diag))
 
-	#check proper insert
+
 	print("Diagnosis added successfully.")
 	closeConnection(conn)
 
@@ -158,10 +161,10 @@ def addMedication(hcno, chartID, staffID, medication, dose):
 	c.execute("SELECT datetime('now')")
 	date = c.fetchone()[0]
 
-	okAmt = checkAmt(hcno, dose, medication) #(1) check prescribed amt against sug amt inside 'dosage'
-	okDrug = checkAllergies(hcno, medication) #(2) 
+	okAmt = checkAmt(hcno, dose, medication) #check (1) 
+	okDrug = checkAllergies(hcno, medication) #check (2) 
 	
-	#add medication entry
+	#add medication entry after values were verified by user
 	startDate = raw_input("Enter date to start medication (YYYY-MM-DD HH:MM:SS): ")
 	endDate = raw_input("Enter date to end medication (YYYY-MM-DD HH:MM:SS): ")
 
@@ -178,6 +181,7 @@ def addMedication(hcno, chartID, staffID, medication, dose):
 def checkAmt(hcno, amt, drugName):
 	conn, c = openConnection()
 
+	# finds the suggested amount for the specified drug in the patient's age group
 	c.execute('''SELECT sug_amount,dosage.age_group
 			  FROM dosage,patients
 			  WHERE patients.hcno = ?
@@ -209,13 +213,15 @@ def checkAmt(hcno, amt, drugName):
 		if choice == 'change':
 			changedAmt=raw_input("Please enter the new amount: ")
 			amt = changedAmt
-			checkAmt(hcno, amt, drugName)
+			checkAmt(hcno, amt, drugName) # recursively checks the changed amount against the suggested amount
 
 	closeConnection(conn)
 	return amt;
 
 def checkAllergies(hcno, prescribedDrug):
 	conn, c = openConnection()
+
+	#finds all reported allergies and their inferred allergies for a patient
 	c.execute(
 	''' SELECT *
 		FROM reportedallergies,inferredallergies
@@ -234,7 +240,7 @@ def checkAllergies(hcno, prescribedDrug):
 			print "This patient is at risk of an allergy reaction to the drug, " + r['canbe_alg'] + " beacause of its similarties to " + r['alg']
 	
 	closeConnection(conn)
-	return prescribedDrug
+	return prescribedDrug # user cannot change the prescription, it will be added regardless
 
 # ----------------------------------- Nurse actions -----------------------------------
 def promptNewPatient():
@@ -332,7 +338,7 @@ def closeChart(chartID, hcno):
 	closeConnection(conn)
 
 # ----------------------------------- Admin actions -----------------------------------
-def createDoctorPrescriptionsReport(starDate, endDate): # dont know if we need to get a period
+def createDoctorPrescriptionsReport(starDate, endDate): 
 	conn,c = openConnection()
 	createReport(starDate, endDate, c)
 	closeConnection(conn)
@@ -342,7 +348,7 @@ def listPrescriptionsForDrug(starDate, endDate, category):
 	drugCategoryTotal(starDate, endDate, category, c)
 	closeConnection(conn)
 
-def listMedicationsForDiagnosis(diagnoses): # must do checks before a lot of them
+def listMedicationsForDiagnosis(diagnoses): 
 	conn,c = openConnection()
 	medicationsAfterDiagnoses(diagnoses, c)
 	closeConnection(conn)

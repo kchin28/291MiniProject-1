@@ -48,7 +48,7 @@ def userController(result):
 
 
 def doctorController(action, staff_id):
-	if action == "q":
+	if action == "q": #quit
 		sys.exit(0)
 
 	conn, c = openConnection()
@@ -90,7 +90,7 @@ def doctorController(action, staff_id):
 	closeConnection(conn)
 
 def nurseController(action, staff_id):
-	if action == "q":
+	if action == "q": #quit
 		sys.exit(0)
 	
 	conn, c = openConnection()

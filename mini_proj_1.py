@@ -8,10 +8,10 @@ def main():
 	sys.stdout.write("Welcome!\n\n")
 	choice = promptForInitialAction()
 
-	if choice == "q":
+	if choice == "q": #quit
 		sys.exit(0)
 
-	elif choice == "login":
+	elif choice == "login": 
 		validLogin = False
 		while not validLogin:
 			user, pw = promptForLoginInfo()
