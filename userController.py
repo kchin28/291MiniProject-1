@@ -56,7 +56,7 @@ def doctorController(action, staff_id):
 
 	if action == str(0):
 		selectAllPatientCharts(hcno)
-		pickChart()
+		pickChart(hcno)
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
 		chartID = raw_input("Please enter chart ID: ")
@@ -88,7 +88,7 @@ def nurseController(action, staff_id):
 
 	if action == str(0):
 		selectAllPatientCharts(hcno)
-		pickChart()
+		pickChart(hcno)
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
 		chartID = raw_input("Please enter chart ID: ")

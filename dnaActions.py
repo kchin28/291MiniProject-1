@@ -19,6 +19,23 @@ def testDoctorActions():
 	hcno = "34wsa"
 	selectAllPatientCharts(hcno)
 
+def isChartOpen(chartID, hcno):
+	conn, c = openConnection()
+	
+	# check if chart is open before proceeding	
+	c.execute( '''SELECT *
+				FROM charts
+				WHERE charts.chart_id = ? 
+				AND charts.hcno = ?'''
+			 ,(chartID, hcno))
+	results = c.fetchone()
+
+	if results[3] is not None:
+		print "Chart: " +  str(chartID) +  " not active. Nothing done" 
+		return False
+	
+	return True
+	
 # ----------------------------------- Doctor & Nurse actions -----------------------------------
 def selectAllPatientCharts(hcno):
 	conn, c = openConnection()
@@ -42,21 +59,9 @@ def selectAllPatientCharts(hcno):
 
 	closeConnection(conn)
 
-def pickChart():
+def pickChart(hcno):
 	conn, c = openConnection()
 	chartID = raw_input("To view a chart in more detail, enter its id. (ie. First Column)\n")
-	
-	# check if chart is open before proceeding	
-	c.execute( '''SELECT *
-				FROM charts
-				WHERE charts.chart_id = ? 
-				ORDER BY adate'''
-			 ,(chartID,))
-	results = c.fetchone()
-
-	if results[3] is not None:
-		print "Chart: " +  str(chartID) +  " not active. " 
-		return;  #goes back to 'main menu'
 
 	#enter error checking here
 	# not yet tested w data, only forming sql query
@@ -86,6 +91,9 @@ def pickChart():
 
 def addSymptom(hcno, chartID, staff_id, sym):
 	conn, c = openConnection()
+	
+	if not isChartOpen(chartID, hcno):
+		return
 
 	c.execute("SELECT datetime('now')")
 	date = c.fetchone()[0]
@@ -104,6 +112,9 @@ def addSymptom(hcno, chartID, staff_id, sym):
 # ----------------------------------- Doctor actions -----------------------------------
 def addDiagnosis(hcno, chartID, staff_id, diag):
 	conn, c = openConnection()
+
+	if not isChartOpen(chartID, hcno):
+		return
 
 	c.execute("SELECT datetime('now')")
 	date = c.fetchone()[0]
@@ -125,6 +136,10 @@ def addMedication(hcno, chartID, staff_id, medication, dose):
 	# check dose first
 	#add to dosage chart
 	conn,c = openConnection()
+
+	if not isChartOpen(chartID, hcno):
+		return
+
 	closeConnection(conn)
 
 # ----------------------------------- Nurse actions -----------------------------------
