@@ -103,6 +103,9 @@ def nurseController(action, staff_id):
 		pickChart(hcno)
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
+		if not patientExist(hcno):
+			return
+			
 		chartID = raw_input("Please enter chart ID: ")
 		if not chartExists(chartID):
 			return
