@@ -53,6 +53,8 @@ def doctorController(action, staff_id):
 
 	conn, c = openConnection()
 	hcno = raw_input("Please enter patient hcno: ")
+	if not patientExist(hcno):
+		return
 
 	if action == str(0):
 		selectAllPatientCharts(hcno)
@@ -60,16 +62,25 @@ def doctorController(action, staff_id):
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
 		chartID = raw_input("Please enter chart ID: ")
+		if not chartExists(chartID):
+			return
+
 		sym = raw_input("symptom: ")
 		addSymptom(hcno, chartID, staff_id, sym)
 
 	elif action == str(2): # hcno, chart_id, staff_id, diagnosis
 		chartID = raw_input("Please enter chart ID: ")
+		if not chartExists(chartID):
+			return
+
 		diag = raw_input("diagnosis: ")
 		addDiagnosis(hcno, chartID, staff_id, diag)
 
 	elif action == str(3): # hcno,chart_id,staff_id,mdate,drug_name
 		chartID = raw_input("Please enter chart ID: ")
+		if not chartExists(chartID):
+			return
+
 		medication = raw_input("medication: ")
 		dose = raw_input("dose: ")
 
@@ -83,15 +94,19 @@ def nurseController(action, staff_id):
 		sys.exit(0)
 	
 	conn, c = openConnection()
-
 	hcno = raw_input("Please enter patient hcno: ")
 
 	if action == str(0):
+		if not patientExist(hcno):
+			return
 		selectAllPatientCharts(hcno)
 		pickChart(hcno)
 
 	elif action == str(1): # hcno, chart_id, staff_id, symptom, obs_date
 		chartID = raw_input("Please enter chart ID: ")
+		if not chartExists(chartID):
+			return
+
 		sym = raw_input("symptom: ")
 		addSymptom(hcno, chartID, staff_id, sym)
 
@@ -99,7 +114,13 @@ def nurseController(action, staff_id):
 		openChart(hcno)
 
 	elif action == str(3):
+		if not patientExist(hcno):
+			return
+			
 		chartID = raw_input("Please enter chart ID: ")
+		if not chartExists(chartID):
+			return
+
 		closeChart(chartID, hcno) 
 
 	closeConnection(conn)
@@ -110,7 +131,7 @@ def adminController(action, staff_id):
 
 	conn, c = openConnection()
 
-	if action == str(0): # ------------------------- IMPORTANT ------------------------
+	if action == str(0):
 		startDate = raw_input("Please enter start date: ")
 		endDate = raw_input("Please enter end date: ")
 		createDoctorPrescriptionsReport(startDate, endDate)

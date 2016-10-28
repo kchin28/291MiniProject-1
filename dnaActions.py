@@ -3,21 +3,35 @@ import sqlite3
 from sqlConnection import *
 from Admin import *
 
-def testDoctorActions():
-	conn, c = openConnection()
-	scriptFile = open('p1-tables.sql', 'r')
-	script = scriptFile.read()
-	scriptFile.close()
-	c.executescript(script)
-	conn.commit()
+# def testDoctorActions(): FOR TESTING
+# 	conn, c = openConnection()
+# 	scriptFile = open('p1-tables.sql', 'r')
+# 	script = scriptFile.read()
+# 	scriptFile.close()
+# 	c.executescript(script)
+# 	conn.commit()
 
-	scriptFile = open('chartsTestData.sql', 'r')
-	script = scriptFile.read()
-	scriptFile.close()
-	c.executescript(script)
+# 	scriptFile = open('chartsTestData.sql', 'r')
+# 	script = scriptFile.read()
+# 	scriptFile.close()
+# 	c.executescript(script)
 	
-	hcno = "34wsa"
-	selectAllPatientCharts(hcno)
+# 	hcno = "34wsa"
+# 	selectAllPatientCharts(hcno)
+
+def chartExists(chartID):
+	conn, c = openConnection()
+	
+	# check if chart exits
+	c.execute("SELECT * FROM charts WHERE charts.chart_id = ?" ,(chartID,))
+	result = c.fetchone()
+
+	closeConnection(conn)
+	if not result:
+		print "...Chart does not exist"
+		return False
+
+	return True
 
 def isChartOpen(chartID, hcno):
 	conn, c = openConnection()
@@ -32,8 +46,10 @@ def isChartOpen(chartID, hcno):
 
 	if results["edate"] is not None:
 		print "Chart: " +  str(chartID) +  " not active. Nothing done" 
+		closeConnection(conn)
 		return False
 	
+	closeConnection(conn)
 	return True
 	
 # ----------------------------------- Doctor & Nurse actions -----------------------------------
@@ -62,9 +78,9 @@ def selectAllPatientCharts(hcno):
 def pickChart(hcno):
 	conn, c = openConnection()
 	chartID = raw_input("To view a chart in more detail, enter its id. (ie. First Column): ")
-
-	#enter error checking here
-	# not yet tested w data, only forming sql query
+	if not chartExists(chartID):
+		return
+		
 	c.execute(''' 
 			SELECT * FROM 
 			 ( SELECT staff_id as StaffID,obs_date as Date ,symptom as Description 
@@ -235,7 +251,7 @@ def createNewPatient(hcno, name, age, addr, phone, ephone):
 
 	insert = [hcno, name, age, addr, phone, ephone]
 	c.execute("INSERT INTO patients VALUES (?, ?, ?, ?, ?, ?)", insert)
-	print "Patient added to database\n"
+	print "Patient added to database"
 	closeConnection(conn)
 
 def promptToAskClose(chartID):
@@ -250,17 +266,36 @@ def promptToAskClose(chartID):
 		elif answ == "n":
 			return False
 
-def openChart(hcno):
-	conn,c = openConnection()
-	# check if patient exists, if not make one
+def patientExist(hcno):
+	conn, c = openConnection()
 	c.execute("SELECT * from patients WHERE hcno = ?", (hcno,) )
 	result = c.fetchone()
 
-	if not result: # no patient
-		print "\nPatient is not found. Creating new patient..."
+	closeConnection(conn)
+	if not result:
+		print "...Patient does not exist"
+		return False
 
-		name, age, addr, phone, ePhone = promptNewPatient()
-		createNewPatient(hcno, name, age, addr, phone, ePhone)
+	return True
+
+def openChart(hcno):
+	conn,c = openConnection()
+
+	# check if patient exists, if not make one
+	validChoice = False
+	while not(validChoice):
+		if not patientExist(hcno): # no patient
+			createPatient = raw_input("Would you like to create a new patient [y/n]? ")
+
+			if createPatient == "y":
+				name, age, addr, phone, ePhone = promptNewPatient()
+				createNewPatient(hcno, name, age, addr, phone, ePhone)
+				validChoice = True
+
+			elif createPatient == "n":
+				return
+		else:
+			validChoice = True
 
 	else: #check if they have a chart open
 		c.execute("SELECT * FROM charts WHERE charts.hcno = ?",(hcno,))
@@ -282,7 +317,7 @@ def openChart(hcno):
 	result = c.fetchone()[0]
 	insert = [chartID, hcno, str(result), None]
 	c.execute("INSERT into charts VALUES (?,?,?,?)", insert)
-	print "Chart has is now open"
+	print "Chart is now open"
 
 	closeConnection(conn)
 
