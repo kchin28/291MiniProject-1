@@ -3,6 +3,7 @@ import sqlite3
 def createReport(startDate, endDate, cursor):
 	#startDate and endDate are strings
 
+	#gets all the staff members and the drugs they have prescribed, only doctors can prescribe drugs
 	sql = ''' 
 				select s.name, m.drug_name, sum(m.amount) as total
 				from staff s, medications m
@@ -16,6 +17,8 @@ def createReport(startDate, endDate, cursor):
 	print
 	print "report of total drugs prescribed"
 	prevDoctorHeader = None
+
+	#
 	for row in result:
 		if prevDoctorHeader != row["name"]:
 			print "Doctor", row["name"]
@@ -25,6 +28,7 @@ def createReport(startDate, endDate, cursor):
 	print
 
 def drugCategoryTotal(startDate, endDate, category, cursor):
+	#uses SUM to find total of the given drug 
 	drugTotal = '''
 			select d.drug_name, sum(m.amount) as drugTotal
 			from drugs d, medications m
@@ -36,6 +40,7 @@ def drugCategoryTotal(startDate, endDate, category, cursor):
 			'''
 	cursor.execute(drugTotal, (category, startDate, endDate))
 	resultDrugTotal = cursor.fetchall()
+	#uses sum to find the total number of drugs in a given category
 	categoryTotal = '''
 					select d.category, sum(m.amount) as categoryTotal
 					from drugs d, medications m
@@ -56,6 +61,9 @@ def drugCategoryTotal(startDate, endDate, category, cursor):
 	print
 
 def medicationsAfterDiagnoses(diagnoses, cursor):
+	#after ensuring that the diagnoses date is before the medication date ,
+	# the group by function groups the drugs together 
+	#and then orders the groups by their total amounts in descending order
 	sql = '''
 			select m.drug_name
 			from medications m, diagnoses dia
@@ -73,6 +81,9 @@ def medicationsAfterDiagnoses(diagnoses, cursor):
 	print
 
 def diagnosesBeforeDrug(drug_name, cursor):
+	# ensures the diagnosis date is before the medication date
+	#then groups the entries by diagnosis condition
+	# ordered by the average amount of that the drug in descending order
 	sql = '''
 			select dia.diagnosis
 			from diagnoses dia, medications m
@@ -88,6 +99,7 @@ def diagnosesBeforeDrug(drug_name, cursor):
 	for row in result:
 		print "Diagnoses:", row['diagnosis']
 
+# testing 
 def testCreateReport(cursor):
 	startDate = '2016-10-25'
 	endDate = '2016-11-01'
