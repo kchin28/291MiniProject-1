@@ -30,7 +30,7 @@ def isChartOpen(chartID, hcno):
 			 ,(chartID, hcno))
 	results = c.fetchone()
 
-	if results[3] is not None:
+	if results["edate"] is not None:
 		print "Chart: " +  str(chartID) +  " not active. Nothing done" 
 		return False
 	
@@ -127,20 +127,95 @@ def addDiagnosis(hcno, chartID, staff_id, diag):
 
 	#check proper insert
 	print("Diagnosis added successfully.")
-
 	closeConnection(conn)
 
 
-def addMedication(hcno, chartID, staff_id, medication, dose):
-	#get age stuff too
-	# check dose first
-	#add to dosage chart
+def addMedication(hcno, chartID, staffID, medication, dose):
 	conn,c = openConnection()
 
 	if not isChartOpen(chartID, hcno):
 		return
 
+	c.execute("SELECT datetime('now')")
+	date = c.fetchone()[0]
+
+	okAmt = checkAmt(hcno, dose, medication) #(1) check prescribed amt against sug amt inside 'dosage'
+	okDrug = checkAllergies(hcno, medication) #(2) 
+	
+	#add medication entry
+	startDate = raw_input("Enter date to start medication (YYYY-MM-DD HH:MM:SS): ")
+	endDate = raw_input("Enter date to end medication (YYYY-MM-DD HH:MM:SS): ")
+
+	print str(hcno), str(chartID), str(staffID), str(okDrug)
+	c.execute('''
+		  INSERT INTO medications
+		  VALUES (?,?,?,?,?,?,?,?)
+		  '''
+	,(hcno,chartID,staffID,date,startDate,endDate,okAmt,okDrug))
+
+	print(" Medication added successfully.")
 	closeConnection(conn)
+
+def checkAmt(hcno, amt, drugName):
+	conn, c = openConnection()
+
+	c.execute('''SELECT sug_amount,dosage.age_group
+			  FROM dosage,patients
+			  WHERE patients.hcno = ?
+			  AND dosage.drug_name= ?
+			  AND dosage.age_group=patients.age_group
+			  '''
+	,(hcno,drugName))
+
+	results = c.fetchall()
+
+	sug_amt = results[0][0]
+	patientsAge = results[0][1]
+
+	if int(amt) > int(sug_amt):
+		print "The amount, "+ str(amt) +" you are prescribing for a patient aged between "+ patientsAge + " is over the recommended amount of "+str(sug_amt)+	"."
+
+		patterns = ['change','keep']
+		matches = set(patterns)
+		validChoice = False
+		choice = "dummy string"
+
+		while not(validChoice):
+			choice = raw_input("Do you wish to [change] or [keep] the prescribed amount? \n")
+			choice = choice.lower().strip()
+
+			if choice in matches: 
+				validChoice = True
+			
+		if choice == 'change':
+			changedAmt=raw_input("Please enter the new amount:   ")
+			amt = changedAmt
+			checkAmt(hcno, amt, drugName)
+
+	closeConnection(conn)
+	return amt;
+
+def checkAllergies(hcno, prescribedDrug):
+	conn, c = openConnection()
+	c.execute(
+	''' SELECT *
+		FROM reportedallergies,inferredallergies
+		WHERE reportedallergies.hcno= ?
+		AND reportedallergies.drug_name=inferredallergies.alg
+	'''
+	,(hcno,))
+
+	results2 = c.fetchall();
+
+	for r in results2:
+		# print r 
+		if r['drug_name'] == prescribedDrug:
+			print "This patient has a reported allergy to the drug, " + prescribedDrug + " with inferred " + r["canbe_alg"]
+		if r['canbe_alg'] == prescribedDrug:
+			print "This patient is at risk of an allergy reaction to the drug, " + r['canbe_alg'] + " beacause of its similarties to " + r['alg']
+	
+	closeConnection(conn)
+	return prescribedDrug
 
 # ----------------------------------- Nurse actions -----------------------------------
 def promptNewPatient():
